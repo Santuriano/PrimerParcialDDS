@@ -1,0 +1,18 @@
+# Archivos del sistema operativo
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+.DS_Store
+
+# Carpetas/archivos de editores
+.vscode/
+.idea/
+*.swp
+*~
+
+# Dependencias (por si más adelante se agrega Node)
+node_modules/
+npm-debug.log*
+
+# Variables de entorno
+.env

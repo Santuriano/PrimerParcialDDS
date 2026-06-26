@@ -1,0 +1,726 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#16140F">
+<title>Sistema de Estudio · Parcial 1 — Desarrollo de Software</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Spectral:ital,wght@0,400;0,500;0,600;0,700;1,400&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#16140F; --bg-soft:#1E1B14; --surface:#262219; --surface-2:#2E2A20;
+    --line:#3A3429; --text:#F3ECDD; --muted:#A89C86; --muted-2:#7E745F;
+    --saffron:#E6A23C; --teal:#5CC3B6; --coral:#E8745B; --green:#8FC76A;
+    --c-fund:#E6A23C; --c-git:#E8745B; --c-html:#6BB6E6; --c-css:#B79CE6;
+    --c-js:#D8B45C; --c-dom:#5CC3B6; --c-node:#8FC76A; --c-async:#E5708B;
+    --c-orm:#5CC3B6; --c-arq:#E6A23C; --c-express:#4A90D9;
+    --ok:#8FC76A; --bad:#E8745B;
+    --radius:16px; --shadow:0 18px 50px -22px rgba(0,0,0,.75);
+    --mono:'JetBrains Mono',ui-monospace,monospace;
+    --sans:'Inter',system-ui,sans-serif;
+    --serif:'Spectral',Georgia,serif;
+  }
+  *{box-sizing:border-box}
+  html,body{margin:0}
+  body{
+    background:
+      radial-gradient(1100px 600px at 80% -10%, rgba(230,162,60,.07), transparent 60%),
+      radial-gradient(900px 500px at -10% 110%, rgba(92,195,182,.06), transparent 55%),
+      var(--bg);
+    color:var(--text); font-family:var(--sans);
+    -webkit-font-smoothing:antialiased; line-height:1.5;
+    min-height:100vh; padding:28px 18px 80px;
+  }
+  .wrap{max-width:920px;margin:0 auto}
+  a{color:var(--teal)}
+
+  /* Header */
+  .eyebrow{font-family:var(--mono);font-size:.72rem;letter-spacing:.22em;
+    text-transform:uppercase;color:var(--saffron);display:flex;align-items:center;gap:10px}
+  .eyebrow::after{content:"";height:1px;flex:1;background:linear-gradient(90deg,var(--line),transparent)}
+  h1{font-family:var(--serif);font-weight:600;font-size:clamp(1.7rem,4.5vw,2.5rem);
+    margin:.35em 0 .15em;letter-spacing:-.01em}
+  h1 em{font-style:italic;color:var(--saffron)}
+  .sub{color:var(--muted);font-size:.95rem;max-width:64ch}
+  .sub code{font-family:var(--mono);font-size:.85em;color:var(--teal);
+    background:rgba(92,195,182,.1);padding:1px 6px;border-radius:6px}
+
+  /* Tabs */
+  .tabs{display:flex;flex-wrap:wrap;gap:8px;margin:22px 0 18px;position:sticky;top:0;
+    background:linear-gradient(180deg,var(--bg) 70%,transparent);padding:8px 0;z-index:20}
+  .tab{font-family:var(--mono);font-size:.78rem;letter-spacing:.05em;text-transform:uppercase;
+    color:var(--muted);background:var(--bg-soft);border:1px solid var(--line);
+    border-radius:999px;padding:9px 16px;cursor:pointer;transition:.16s;display:flex;align-items:center;gap:8px}
+  .tab:hover{color:var(--text);border-color:var(--muted-2)}
+  .tab[aria-selected="true"]{background:var(--saffron);color:#1c1206;font-weight:600;border-color:var(--saffron)}
+  .tab .ico{font-size:1rem}
+
+  .panel{display:none;animation:fade .3s ease}
+  .panel.active{display:block}
+  @keyframes fade{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+
+  h2.sec{font-family:var(--serif);font-size:1.4rem;font-weight:600;margin:6px 0 4px}
+  p.lead{color:var(--muted);font-size:.92rem;margin:.2em 0 16px;max-width:70ch}
+
+  .card-base{background:linear-gradient(180deg,var(--surface),var(--bg-soft));
+    border:1px solid var(--line);border-radius:var(--radius);box-shadow:var(--shadow)}
+
+  /* ---------- PLAN ---------- */
+  .dayrow{display:flex;gap:14px;align-items:stretch;margin-bottom:14px}
+  .daynum{flex:none;width:54px;border-radius:14px;display:flex;flex-direction:column;
+    align-items:center;justify-content:center;font-family:var(--mono);
+    background:color-mix(in srgb,var(--cc,var(--saffron)) 16%,transparent);
+    border:1px solid color-mix(in srgb,var(--cc,var(--saffron)) 40%,transparent)}
+  .daynum b{font-size:1.5rem;color:var(--cc,var(--saffron));line-height:1}
+  .daynum span{font-size:.6rem;letter-spacing:.1em;text-transform:uppercase;color:var(--muted-2);margin-top:3px}
+  .daycard{flex:1;padding:16px 18px}
+  .daycard h3{margin:0 0 4px;font-size:1.02rem;font-family:var(--sans);font-weight:600}
+  .daycard h3 .tag{font-family:var(--mono);font-size:.62rem;letter-spacing:.1em;text-transform:uppercase;
+    color:var(--cc,var(--saffron));margin-left:8px}
+  .daycard ul{margin:8px 0 0;padding-left:18px;color:var(--muted);font-size:.88rem}
+  .daycard ul li{margin:3px 0}
+  .daycard .recall{margin-top:10px;font-size:.82rem;color:var(--teal);
+    background:rgba(92,195,182,.08);border-left:3px solid var(--teal);padding:7px 11px;border-radius:0 8px 8px 0}
+  .diag{padding:18px 20px;margin-bottom:22px;border-left:4px solid var(--saffron)}
+  .diag h3{margin:0 0 8px;font-family:var(--serif);font-size:1.15rem}
+  .diag .pills{display:flex;flex-wrap:wrap;gap:7px;margin-top:10px}
+  .dp{font-size:.74rem;font-family:var(--mono);padding:5px 11px;border-radius:999px;
+    border:1px solid var(--line);color:var(--muted)}
+  .dp.hot{color:#1c1206;background:var(--saffron);font-weight:600}
+  .dp.warn{color:var(--coral);border-color:var(--coral)}
+
+  /* ---------- FICHAS ---------- */
+  .cats{display:flex;flex-wrap:wrap;gap:7px;margin-bottom:8px}
+  .pill{font-size:.76rem;font-weight:500;color:var(--muted);background:transparent;
+    border:1px solid var(--line);border-radius:999px;padding:6px 12px;cursor:pointer;
+    display:inline-flex;align-items:center;gap:7px;transition:.16s}
+  .pill .dot{width:8px;height:8px;border-radius:50%;background:var(--cc,var(--muted))}
+  .pill:hover{color:var(--text);border-color:var(--muted-2)}
+  .pill[aria-pressed="true"]{color:var(--text);border-color:var(--cc,var(--saffron));
+    background:color-mix(in srgb,var(--cc,var(--saffron)) 14%,transparent)}
+  .pill .n{font-family:var(--mono);font-size:.7rem;color:var(--muted-2)}
+  .fichabar{display:flex;flex-wrap:wrap;gap:10px;align-items:center;margin:14px 0}
+  .counter{font-family:var(--mono);font-size:.78rem;color:var(--muted-2);margin-left:auto}
+  .navbtn{font-family:var(--mono);font-size:.76rem;text-transform:uppercase;letter-spacing:.05em;
+    color:var(--text);background:var(--bg-soft);border:1px solid var(--line);border-radius:999px;
+    padding:9px 16px;cursor:pointer;transition:.16s}
+  .navbtn:hover{border-color:var(--saffron);color:var(--saffron)}
+
+  .scene{perspective:1800px;margin:6px 0 14px}
+  .flip{position:relative;width:100%;min-height:380px;transform-style:preserve-3d;
+    transition:transform .55s cubic-bezier(.2,.7,.2,1);cursor:pointer}
+  .flip.flipped{transform:rotateY(180deg)}
+  .face{position:absolute;inset:0;backface-visibility:hidden;-webkit-backface-visibility:hidden;
+    background:linear-gradient(180deg,var(--surface),var(--bg-soft));
+    border:1px solid var(--line);border-radius:var(--radius);box-shadow:var(--shadow);
+    padding:28px 30px;display:flex;flex-direction:column;overflow:hidden}
+  .face::before{content:"";position:absolute;left:0;top:0;bottom:0;width:6px;background:var(--cc,var(--saffron))}
+  .back{transform:rotateY(180deg)}
+  .meta{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:16px}
+  .ftab{font-family:var(--mono);font-size:.66rem;letter-spacing:.14em;text-transform:uppercase;
+    color:var(--cc,var(--saffron));display:inline-flex;align-items:center;gap:8px;font-weight:600}
+  .ftab .dot{width:9px;height:9px;border-radius:50%;background:var(--cc,var(--saffron))}
+  .num{font-family:var(--mono);font-size:.7rem;color:var(--muted-2)}
+  .qtext{font-family:var(--serif);font-size:clamp(1.2rem,3vw,1.55rem);line-height:1.34;font-weight:500}
+  .hintrow{margin-top:auto;font-family:var(--mono);font-size:.68rem;letter-spacing:.08em;
+    text-transform:uppercase;color:var(--muted-2);display:flex;align-items:center;gap:8px}
+  .atext{font-size:.98rem;line-height:1.6;color:#E9E1D2;overflow-y:auto;padding-right:6px;flex:1}
+  .atext::-webkit-scrollbar{width:8px}
+  .atext::-webkit-scrollbar-thumb{background:var(--line);border-radius:8px}
+  .atext code{font-family:var(--mono);font-size:.84em;color:var(--teal);
+    background:rgba(92,195,182,.1);padding:1px 6px;border-radius:6px}
+  .atext pre{font-family:var(--mono);font-size:.78rem;line-height:1.5;color:#E9E1D2;
+    background:#100E0A;border:1px solid var(--line);border-radius:10px;padding:11px 13px;overflow-x:auto;margin:10px 0}
+  .atext pre code{background:none;color:inherit;padding:0}
+  .atext strong{color:var(--saffron);font-weight:600}
+  .atext ul{margin:8px 0;padding-left:18px}
+  .atext li{margin:4px 0}
+  .atext .key{color:var(--teal);font-weight:600}
+
+  /* ---------- QUIZ ---------- */
+  .qsetup{padding:20px 22px;margin-bottom:18px}
+  .qsetup h3{margin:0 0 6px;font-family:var(--serif);font-size:1.2rem}
+  .modebtns{display:flex;flex-wrap:wrap;gap:8px;margin-top:12px}
+  .qq{padding:20px 22px;margin-bottom:14px}
+  .qhead{display:flex;justify-content:space-between;gap:10px;align-items:baseline;margin-bottom:10px}
+  .qhead .qn{font-family:var(--mono);font-size:.72rem;color:var(--muted-2)}
+  .qhead .qcat{font-family:var(--mono);font-size:.62rem;text-transform:uppercase;letter-spacing:.1em;
+    color:var(--cc,var(--saffron));border:1px solid color-mix(in srgb,var(--cc,var(--saffron)) 40%,transparent);
+    border-radius:999px;padding:2px 9px}
+  .qstem{font-size:1.02rem;line-height:1.5;margin-bottom:6px}
+  .qstem code{font-family:var(--mono);font-size:.85em;color:var(--teal);background:rgba(92,195,182,.1);padding:1px 5px;border-radius:5px}
+  .qhelp{font-size:.78rem;color:var(--muted-2);margin-bottom:12px;font-style:italic}
+  .opt{display:flex;gap:11px;align-items:flex-start;padding:11px 14px;border:1px solid var(--line);
+    border-radius:11px;margin:7px 0;cursor:pointer;transition:.14s;background:var(--bg-soft)}
+  .opt:hover{border-color:var(--muted-2)}
+  .opt .box{flex:none;width:20px;height:20px;border-radius:6px;border:1.5px solid var(--muted-2);
+    display:flex;align-items:center;justify-content:center;font-size:.7rem;margin-top:1px;font-family:var(--mono)}
+  .opt.sel{border-color:var(--saffron);background:color-mix(in srgb,var(--saffron) 12%,transparent)}
+  .opt.sel .box{border-color:var(--saffron);background:var(--saffron);color:#1c1206}
+  .opt.correct{border-color:var(--ok);background:color-mix(in srgb,var(--ok) 14%,transparent)}
+  .opt.correct .box{border-color:var(--ok);background:var(--ok);color:#10240a}
+  .opt.wrong{border-color:var(--bad);background:color-mix(in srgb,var(--bad) 13%,transparent)}
+  .opt.wrong .box{border-color:var(--bad);background:var(--bad);color:#2a0f09}
+  .opt .otxt{font-size:.92rem;line-height:1.45}
+  .opt .otxt code{font-family:var(--mono);font-size:.85em;color:var(--teal)}
+  .feedback{margin-top:12px;font-size:.86rem;line-height:1.5;border-left:3px solid var(--cc,var(--saffron));
+    padding:9px 13px;border-radius:0 8px 8px 0;background:rgba(255,255,255,.02);display:none}
+  .feedback.show{display:block}
+  .feedback.ok{border-color:var(--ok)} .feedback.no{border-color:var(--bad)}
+  .feedback b{color:var(--saffron)}
+  /* matching */
+  .match{display:grid;gap:9px;margin:6px 0}
+  .matchrow{display:grid;grid-template-columns:1fr 1.3fr;gap:10px;align-items:center}
+  .matchlabel{font-size:.92rem;font-weight:600;color:var(--text);padding:8px 10px;
+    background:var(--bg-soft);border:1px solid var(--line);border-radius:9px}
+  .match select{width:100%;font-family:var(--sans);font-size:.88rem;color:var(--text);
+    background:var(--bg-soft);border:1px solid var(--line);border-radius:9px;padding:9px 10px}
+  .match select.correct{border-color:var(--ok)} .match select.wrong{border-color:var(--bad)}
+  .btnrow{display:flex;gap:10px;flex-wrap:wrap;margin-top:14px}
+  .btn{font-family:var(--mono);font-size:.8rem;text-transform:uppercase;letter-spacing:.05em;
+    padding:11px 20px;border-radius:999px;cursor:pointer;border:1px solid var(--line);transition:.16s}
+  .btn.primary{background:var(--saffron);color:#1c1206;font-weight:600;border-color:var(--saffron)}
+  .btn.primary:hover{filter:brightness(1.08)}
+  .btn.ghost{background:var(--bg-soft);color:var(--text)}
+  .btn.ghost:hover{border-color:var(--saffron);color:var(--saffron)}
+  .btn:disabled{opacity:.4;cursor:not-allowed}
+  .scorecard{padding:24px;text-align:center;margin-bottom:18px;border:1px solid var(--saffron);
+    background:linear-gradient(180deg,color-mix(in srgb,var(--saffron) 10%,var(--surface)),var(--bg-soft))}
+  .scorecard .big{font-family:var(--serif);font-size:3rem;font-weight:700;color:var(--saffron);line-height:1}
+  .scorecard .pct{font-family:var(--mono);color:var(--muted);margin-top:6px}
+  .scorecard .msg{margin-top:12px;font-size:.95rem;color:var(--text)}
+
+  /* ---------- REPASO ---------- */
+  table.rep{width:100%;border-collapse:collapse;font-size:.86rem;margin-top:6px}
+  table.rep th,table.rep td{border:1px solid var(--line);padding:9px 11px;text-align:left}
+  table.rep th{font-family:var(--mono);font-size:.68rem;text-transform:uppercase;letter-spacing:.08em;
+    color:var(--saffron);background:var(--bg-soft)}
+  table.rep td .chk{cursor:pointer;font-size:1rem}
+  .legend{font-size:.8rem;color:var(--muted-2);margin-top:10px}
+  .tip{font-size:.86rem;color:var(--muted);background:var(--bg-soft);border:1px solid var(--line);
+    border-radius:12px;padding:14px 16px;margin-top:16px;border-left:3px solid var(--teal)}
+  .tip b{color:var(--teal)}
+  footer{margin-top:30px;font-size:.78rem;color:var(--muted-2);text-align:center;font-family:var(--mono)}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <div class="eyebrow">UTN-FRC · Desarrollo de Software · Parcial 1</div>
+    <h1>Sistema de estudio <em>acelerado</em></h1>
+    <p class="sub">Apuntes <code>01 → 14</code>: del stack en capas a Express. Recuerdo activo, repetición espaciada y simulacros estilo examen. Plan de <b>6 días · 3 h/día</b> · arranque desde cero.</p>
+  </header>
+
+  <nav class="tabs" role="tablist">
+    <button class="tab" role="tab" aria-selected="true" data-panel="plan"><span class="ico">🗓️</span>Plan</button>
+    <button class="tab" role="tab" aria-selected="false" data-panel="fichas"><span class="ico">🃏</span>Fichas</button>
+    <button class="tab" role="tab" aria-selected="false" data-panel="quiz"><span class="ico">✅</span>Simulacro</button>
+    <button class="tab" role="tab" aria-selected="false" data-panel="repaso"><span class="ico">🔁</span>Repaso</button>
+  </nav>
+
+  <section class="panel active" id="plan"></section>
+  <section class="panel" id="fichas"></section>
+  <section class="panel" id="quiz"></section>
+  <section class="panel" id="repaso"></section>
+
+  <footer>Hecho para Hugo · estudiá en bloques de 25 min + 5 de descanso · predecí antes de dar vuelta la ficha</footer>
+</div>
+
+<script>
+/* ===== DATA: se inyecta abajo ===== */
+</script>
+<script id="app-data">
+/* ====== CATEGORÍAS ====== */
+const CATS = {
+  fund:{label:'Fundamentos', v:'--c-fund'},
+  git:{label:'Git', v:'--c-git'},
+  html:{label:'HTML', v:'--c-html'},
+  css:{label:'CSS / Bootstrap', v:'--c-css'},
+  js:{label:'JavaScript', v:'--c-js'},
+  dom:{label:'DOM / SPA', v:'--c-dom'},
+  node:{label:'Node / NPM', v:'--c-node'},
+  async:{label:'Asincronía', v:'--c-async'},
+  orm:{label:'ORM / Sequelize', v:'--c-orm'},
+  arq:{label:'Arquitectura / HTTP', v:'--c-arq'},
+  express:{label:'Express / Router', v:'--c-express'}
+};
+
+/* ====== PLAN 6 DÍAS ====== */
+const PLAN = [
+  {n:1, cc:'--c-fund', tag:'Ap. 01–02', t:'Fundamentos + Git',
+   items:['Stack en capas: Cliente · Frontend · Backend · Database (qué hace cada una).','Full Stack, qué es JS y qué NO puede hacer en el navegador (seguridad, same-origin, archivos).','Git: VCS, estados modificado/staged/commited, comandos clone·add·commit·push·pull, ramas y .gitignore.'],
+   recall:'Cerrá el apunte y dibujá las 4 capas + escribí los 3 estados de un archivo en Git.'},
+  {n:2, cc:'--c-html', tag:'Ap. 03–05', t:'HTML · CSS · Bootstrap',
+   items:['HTML: estructura (head/body), etiquetas semánticas vs div, formularios (label + for, action/method).','CSS: regla (selector + bloque), tipos de selectores, modelo de cajas (content·padding·border·margin).','Bootstrap: framework responsive, grid (container/row/col), instalación por CDN.'],
+   recall:'Decí en voz alta 4 etiquetas semánticas y por qué labels mejoran accesibilidad.'},
+  {n:3, cc:'--c-js', tag:'Ap. 06–07', t:'JavaScript núcleo',
+   items:['Tipos, tipado dinámico, === vs == (coerción), valores falsy, conversión Number()/String()/Boolean().','Funciones: declaración vs expresión (hoisting), arrow functions y el this.','Objetos, arrays (map/filter/forEach/find), destructuring, módulos import/export, JSON.'],
+   recall:'Explicá la diferencia entre map y filter, y qué devuelve forEach.'},
+  {n:4, cc:'--c-async', tag:'Ap. 08–10', t:'DOM · Node · Asincronía',
+   items:['DOM: árbol, document, getElementById/textContent/innerHTML, eventos y addEventListener; SPA y hash routing.','Node: entorno de ejecución V8, single-thread + event loop, non-blocking I/O; NPM (init, install, scripts), package.json.','Asincronía: callbacks, setTimeout, promesas (then/catch), async/await, fetch, Map.'],
+   recall:'Predecí la salida de console.log A / setTimeout(B,2000) / console.log C antes de mirar.'},
+  {n:5, cc:'--c-arq', tag:'Ap. 11–14', t:'Backend: ORM · REST · Express',
+   items:['ORM Sequelize: modelo = tabla, validaciones vs restricciones, CRUD (findAll/findOne/create/bulkCreate).','Arquitectura: capas, REST (cliente-servidor, sin estado), métodos HTTP y códigos de estado.','Express: app.{método}(path, handler), req (params/query/body), res (send/json/status), Router, static, CORS.'],
+   recall:'Asociá cada pieza backend (Ruta/Controlador/Servicio/Modelo) con su responsabilidad.'},
+  {n:6, cc:'--c-git', tag:'Repaso', t:'Repaso espaciado + simulacros',
+   items:['Mañana: re-pasá las fichas que marcaste como débiles (pestaña Repaso).','Hacé el Simulacro completo cronometrado (≈50 min). Corregí y anotá errores.','Re-hacé solo las preguntas falladas + las matching de arquitectura/HTTP (las de mayor peso).'],
+   recall:'Si una pregunta de 2 min te lleva 6, ese tema todavía no lo dominás: volvé a la ficha.'}
+];
+
+/* ====== FICHAS (recuerdo activo) ====== */
+const FICHAS = [
+  {c:'fund', q:'¿Cuáles son las 4 capas del stack y qué responsabilidad tiene cada una?',
+   a:'Modelo en capas que se comunican con las adyacentes:<ul><li><span class="key">Cliente</span>: entorno donde corre la interfaz (el navegador).</li><li><span class="key">Frontend</span>: presenta la información, captura interacciones y arma las peticiones.</li><li><span class="key">Backend</span>: motoriza las reglas de negocio, controla acceso y expone endpoints.</li><li><span class="key">Database</span> (capa de datos): persiste y recupera datos de forma consistente.</li></ul>Un <b>Full Stack</b> conoce todas las capas y resuelve la integración entre ellas.'},
+  {c:'fund', q:'¿Qué NO puede hacer JavaScript en el navegador y por qué?',
+   a:'Por seguridad del usuario, JS en el navegador <b>no puede</b>:<ul><li>Leer/escribir archivos arbitrarios del disco ni ejecutar programas del SO.</li><li>Acceder a cámara/micrófono sin permiso explícito.</li><li>Leer otra pestaña de <b>distinto origen</b> (dominio, protocolo o puerto): <span class="key">Same Origin Policy</span>.</li></ul>El acceso a archivos solo se "relaja" si el usuario actúa: arrastra el archivo o usa <code>&lt;input type="file"&gt;</code>. Fuera del navegador (Node) estas restricciones no existen.'},
+  {c:'fund', q:'¿Qué es Node.js? ¿Es un lenguaje o un framework?',
+   a:'Node.js <b>no</b> es un lenguaje (el lenguaje es JavaScript) ni un framework (eso es Express). Es un <span class="key">entorno de ejecución</span> de JS construido sobre el motor <b>V8</b> de Chrome, que permite correr JS fuera del navegador, en el servidor. Es además una <b>biblioteca de dependencias</b>. Modelo: <b>un solo hilo + event loop</b>, I/O no bloqueante.'},
+  {c:'git', q:'¿Cuáles son los 3 estados de un archivo en Git y cómo se avanza entre ellos?',
+   a:'<ul><li><span class="key">Modificado</span>: se cambió el archivo pero no se registró.</li><li><span class="key">Staged</span> (preparado): se marcó para el próximo commit con <code>git add</code>.</li><li><span class="key">Commited</span> (confirmado): <code>git commit -m "msg"</code> lo guarda en el historial local con autor y fecha.</li></ul>Para enviarlo al repo remoto: <code>git push</code>. Para traer cambios: <code>git pull</code>. Git es <b>distribuido</b>: cada clon tiene todo el historial.'},
+  {c:'git', q:'¿Qué hace .gitignore y para qué sirve git branch?',
+   a:'<code>.gitignore</code> es un archivo de texto que le dice a Git qué archivos <b>ignorar</b> (ej: <code>node_modules/</code>). Una <span class="key">rama</span> (branch) es una bifurcación del estado del código que permite desarrollar en paralelo sin tocar la principal. Comandos: <code>git branch nueva</code>, <code>git checkout nueva</code>, <code>git merge rama</code>. Los <b>conflictos</b> aparecen cuando dos personas editan la misma línea.'},
+  {c:'html', q:'¿Por qué usar etiquetas semánticas en vez de <div> genéricos?',
+   a:'Las semánticas (<code>header</code>, <code>nav</code>, <code>main</code>, <code>article</code>, <code>section</code>, <code>aside</code>, <code>footer</code>) mejoran:<ul><li><span class="key">Legibilidad</span>: se entiende la estructura sin mirar id/class.</li><li><span class="key">Accesibilidad</span>: lectores de pantalla interpretan mejor.</li><li><span class="key">SEO</span>: Google reconoce las secciones.</li><li><span class="key">Mantenibilidad</span>: menos CSS para diferenciar bloques.</li></ul>'},
+  {c:'html', q:'En un formulario, ¿qué hacen action, method y el <label> con for?',
+   a:'En <code>&lt;form&gt;</code>:<ul><li><span class="key">action</span>: URL a la que se envían los datos.</li><li><span class="key">method</span>: <code>GET</code> (datos en la URL) o <code>POST</code> (datos en el cuerpo).</li></ul>El <code>&lt;label for="id"&gt;</code> asocia un texto a un campo (<code>&lt;input id="id"&gt;</code>): mejora <b>accesibilidad</b> (el lector anuncia el campo) y <b>usabilidad</b> (clic en la etiqueta enfoca el campo). El <code>placeholder</code> <b>no</b> reemplaza al label.'},
+  {c:'html', q:'¿Qué función cumplen <head>, <body> y <!DOCTYPE html>?',
+   a:'<ul><li><code>&lt;!DOCTYPE html&gt;</code>: indica que el documento es HTML5 (renderizado correcto).</li><li><code>&lt;head&gt;</code>: contenido no visible — <code>meta charset</code>, <code>title</code>, <code>link</code> (CSS), <code>script</code>.</li><li><code>&lt;body&gt;</code>: todo el contenido visible para el usuario.</li></ul>HTML <b>no es un lenguaje de programación</b>, es de marcado: estructura, no apariencia (de eso se ocupa CSS).'},
+  {c:'css', q:'¿Cómo se compone una regla CSS y qué tipos de selectores hay?',
+   a:'Una regla = <span class="key">selector</span> + <span class="key">bloque de declaración</span>:<pre>p {\n  color: blue;\n}</pre>Selectores principales:<ul><li>Elemento: <code>p</code></li><li>Clase: <code>.destacado</code></li><li>ID: <code>#encabezado</code></li><li>Atributo: <code>input[type="text"]</code></li><li>Universal: <code>*</code></li><li>Pseudo-clase: <code>a:hover</code></li></ul>'},
+  {c:'css', q:'¿Qué es el modelo de cajas y qué es Bootstrap?',
+   a:'<b>Modelo de cajas:</b> cada elemento es una caja con capas: <span class="key">content → padding → border → margin</span>. Las cajas pueden ser de <b>bloque</b> (respetan width/height, ocupan toda la línea) o <b>en línea</b>.<br><br><b>Bootstrap:</b> framework de CSS/JS de código abierto para diseño <span class="key">responsive</span>. Aporta un sistema de grilla (<code>container</code> / <code>row</code> / <code>col</code>) y componentes listos. Se instala fácil por <b>CDN</b>.'},
+  {c:'js', q:'¿Cuál es la diferencia entre == y === en JavaScript?',
+   a:'<ul><li><code>===</code> y <code>!==</code>: comparación <span class="key">estricta</span> — compara valor <b>y tipo</b>, sin conversión.</li><li><code>==</code> y <code>!=</code>: comparación <span class="key">no estricta</span> — hace <b>coerción</b> (convierte tipos antes de comparar).</li></ul>Ejemplos: <code>"3" == 3</code> → <b>true</b>; <code>"3" === 3</code> → <b>false</b>. <b>Buena práctica:</b> usar siempre los estrictos para evitar resultados imprevisibles.'},
+  {c:'js', q:'¿Qué valores son "falsy" en JavaScript?',
+   a:'Los valores que se convierten a <code>false</code> con <code>Boolean(valor)</code>:<ul><li><code>false</code></li><li><code>0</code>, <code>-0</code>, <code>0n</code></li><li>Cadena vacía: <code>""</code> / <code>\'\'</code></li><li><code>null</code></li><li><code>undefined</code></li><li><code>NaN</code></li></ul>Todo lo demás es <span class="key">truthy</span>. Para sumar strings numéricos: <code>Number(a) + b</code> (conversión explícita).'},
+  {c:'js', q:'Declaración vs expresión de función: ¿qué es el hoisting?',
+   a:'<ul><li><span class="key">Declaración</span> (<code>function foo(){}</code>): es <b>elevada</b> (hoisted) → se puede invocar <b>antes</b> de definirla.</li><li><span class="key">Expresión</span> (<code>const foo = function(){}</code>): <b>no</b> se eleva → solo se usa después de definirla.</li></ul>Las expresiones pueden ser anónimas y pasarse como argumento. Ejemplo: llamar a una declaración antes de su línea funciona; con expresión da error.'},
+  {c:'js', q:'Arrow functions: ¿cómo se comportan con this?',
+   a:'Las arrow functions <b>no tienen su propio</b> <code>this</code>: lo <span class="key">heredan del contexto léxico</span> donde se definieron.<pre>const p = {\n  nombre:"Juan",\n  saludar: () => console.log(this.nombre)\n};\np.saludar(); // undefined</pre><b>Regla:</b> si usás <code>this</code> (métodos de objeto/clase) → función tradicional. Si no (callbacks, <code>map</code>/<code>filter</code>/<code>forEach</code>) → arrow.'},
+  {c:'js', q:'map vs filter vs forEach: ¿qué hace cada uno y qué devuelven?',
+   a:'<ul><li><span class="key">map</span>: transforma cada elemento → devuelve un <b>array nuevo</b> del mismo tamaño. <code>arr.map(x=&gt;x*2)</code></li><li><span class="key">filter</span>: deja solo los que cumplen la condición → <b>array nuevo</b> (más chico). <code>arr.filter(x=&gt;x&gt;10)</code></li><li><span class="key">forEach</span>: recorre y ejecuta, <b>no devuelve nada</b> (undefined).</li></ul>Ninguno modifica el original. (Sí modifican: <code>push</code>, <code>pop</code>, <code>shift</code>, <code>unshift</code>, <code>splice</code>.)'},
+  {c:'js', q:'¿Qué es destructuring y qué es JSON?',
+   a:'<b>Destructuring</b> (desempaquetado, ES6) extrae propiedades/elementos en una línea:<pre>const {nombre, edad} = persona;\nconst [primero, segundo] = numeros;</pre><b>JSON</b> (JavaScript Object Notation): formato de texto para intercambio de datos. Estructuras: objetos <code>{clave:valor}</code> y arrays <code>[...]</code>. Los valores pueden ser string, número, boolean, null, objeto o array. Es el formato que el backend expone a la SPA.'},
+  {c:'dom', q:'¿Qué es el DOM y cómo se accede/modifica un elemento desde JS?',
+   a:'El <span class="key">DOM</span> (Document Object Model) es la representación en <b>árbol de etiquetas</b> del documento HTML; una API para acceder y modificar contenido, estructura y estilo. Se accede vía el objeto <code>document</code>:<pre>document.getElementById("titulo")\n  .textContent = "Datos actualizados";</pre><code>textContent</code> cambia solo el texto del nodo (no lo interpreta como HTML). <code>innerHTML</code> sí interpreta etiquetas.'},
+  {c:'dom', q:'¿Cómo se manejan eventos en el DOM? addEventListener',
+   a:'Un <span class="key">evento</span> es una interacción del usuario (clic, tecla, mover el mouse). Se registra un "oyente":<pre>elemento.addEventListener("click", miFuncion);</pre>El evento se propaga en 3 etapas: <b>captura</b> → <b>blanco</b> (destino) → <b>burbujeo</b>. El 3er parámetro (<code>true</code>/<code>false</code>) elige captura o burbujeo. También existe <code>elemento.onclick = fn</code>.'},
+  {c:'dom', q:'¿Qué es una SPA y cómo maneja las rutas sin recargar?',
+   a:'Una <span class="key">SPA</span> (Single Page Application) carga un solo HTML y luego intercambia <b>vistas</b> (no páginas) dinámicamente, dando navegación fluida. La URL <b>sí</b> cambia, por usabilidad (historial, atrás/adelante). Lo logra con el <span class="key">hash</span> de la URL (<code>#</code>) + el evento <code>hashchange</code>:<pre>window.addEventListener("hashchange", manejador);\nconsole.log(location.hash);</pre>El frontend (SPA) y el backend son independientes: se comunican por una API JSON.'},
+  {c:'node', q:'¿Qué es NPM y para qué sirve package.json?',
+   a:'<span class="key">NPM</span> (Node Package Manager): gestor de paquetes de Node. CLI + repositorio online. Usos: <b>inicializar</b> (<code>npm init</code> / <code>-y</code>), <b>instalar deps</b> (<code>npm install paquete</code>), <b>ejecutar scripts</b> (<code>npm run start</code>).<br><br><code>package.json</code>: archivo que define el proyecto (name, version, scripts, dependencies). Permite no compartir <code>node_modules</code>: con <code>npm install</code> se reinstalan todas las dependencias.'},
+  {c:'node', q:'dependencies vs devDependencies y el versionado semántico',
+   a:'<ul><li><span class="key">dependencies</span>: necesarias para ejecutar la app (por defecto).</li><li><span class="key">devDependencies</span>: solo para desarrollo (ej: ESLint), con <code>--save-dev</code>. No van a producción.</li></ul><b>Versionado semántico</b> <code>mayor.menor.patch</code>:<ul><li><code>^1.0.4</code>: última versión <b>menor</b> de la serie 1.</li><li><code>~1.0.4</code>: última versión <b>patch</b> de la 1.0.</li><li>sin símbolo: versión exacta.</li></ul>'},
+  {c:'node', q:'¿Por qué Node es escalable? Single-thread + event loop',
+   a:'Node es <span class="key">single-threaded</span> (un solo hilo) pero usa un <span class="key">bucle de eventos</span> y E/S <b>no bloqueante</b>. Cuando una operación lenta (archivo, BD, red) llega, se delega a un hilo secundario (libuv); cuando termina, su <b>callback</b> entra a la cola de eventos y el hilo principal lo ejecuta. Así no se bloquea atendiendo muchas peticiones a la vez. ⚠ Tareas intensivas en CPU no son ideales en Node.'},
+  {c:'async', q:'¿Qué es un callback y qué provoca la asincronía?',
+   a:'Un <span class="key">callback</span> es simplemente una función que se pasa como argumento a otra y se invoca "de vuelta" más tarde. Por sí solo no genera asincronía (la ejecución sigue secuencial). La asincronía aparece cuando hay una <b>espera</b>, ej <code>setTimeout</code>:<pre>console.log("A");\nsetTimeout(()=&gt;console.log("B"), 2000);\nconsole.log("C");\n// Salida: A, C, B</pre>El hilo principal no se detiene: imprime C y, 2s después, ejecuta el callback (B).'},
+  {c:'async', q:'¿Qué es una promesa y cuáles son sus estados?',
+   a:'Una <span class="key">promesa</span> representa la respuesta de una tarea asíncrona que se obtendrá en el futuro. Estados:<ul><li><b>Pendiente</b>: estado inicial.</li><li><b>Cumplida</b> (resolve): éxito.</li><li><b>Rechazada</b> (reject): error.</li><li><b>Arreglada</b>: ya no está pendiente.</li></ul>Se consume con <code>.then()</code> (éxito) y <code>.catch()</code> (error):<pre>fetch(url)\n  .then(res =&gt; res.json())\n  .then(data =&gt; console.log(data))\n  .catch(err =&gt; console.log(err));</pre>'},
+  {c:'async', q:'async / await y el método fetch',
+   a:'<code>async</code>/<code>await</code> permiten escribir código asíncrono que <b>se lee como síncrono</b>. <code>await</code> pausa la función (que debe ser <code>async</code>) hasta que la promesa se resuelve:<pre>async function nombrar() {\n  const res = await fetch(url);\n  const data = await res.json();\n  console.log(data.name);\n}</pre><b>fetch</b> hace una petición HTTP a una API y devuelve una promesa. ⚠ <code>await</code> solo se usa dentro de una función <code>async</code> (o contexto que lo permita).'},
+  {c:'async', q:'¿Para qué sirve la colección Map?',
+   a:'Un <span class="key">Map</span> almacena pares <b>clave-valor</b> (clave de cualquier tipo) con acceso eficiente (tabla hash), a diferencia del recorrido lineal de un array. Métodos:<ul><li><code>set(clave, valor)</code> — agrega/reemplaza</li><li><code>get(clave)</code> — devuelve valor o <code>undefined</code></li><li><code>has(clave)</code> — true/false</li><li><code>delete(clave)</code></li><li><code>keys()</code> / <code>values()</code> — iteradores</li></ul>⚠ En recorridos no garantiza el orden de inserción.'},
+  {c:'orm', q:'¿Qué es un ORM y qué ventajas/desventajas tiene?',
+   a:'<span class="key">ORM</span> (Object Relational Mapping): técnica que crea un "puente" entre los <b>objetos</b> del programa y las <b>tablas</b> de la BD relacional, para trabajar sin escribir SQL directo.<pre>// con ORM\nUsuario.findOne({ where:{ id:3 } });\n// sin ORM\nSELECT * FROM usuarios WHERE id=3;</pre><b>Ventajas:</b> un solo lenguaje, abstrae el motor (cambiar SQLite→MySQL fácil), transacciones. <b>Desventajas:</b> curva de aprendizaje, configuración inicial, más difícil depurar performance.'},
+  {c:'orm', q:'En Sequelize, ¿qué es un modelo y qué es validación vs restricción?',
+   a:'Un <span class="key">modelo</span> es una abstracción que representa una <b>tabla</b>; cada instancia es una <b>fila</b>. Se define con propiedades (<code>primaryKey</code>, <code>autoIncrement</code>, <code>allowNull</code>, <code>unique</code>, <code>defaultValue</code>).<ul><li><span class="key">Validación</span>: a nivel ORM (JS). Si falla, el dato <b>no</b> llega a la BD (ej: <code>isEmail</code>, <code>len</code>, <code>isIn</code>).</li><li><span class="key">Restricción</span>: a nivel BD. Sequelize manda el dato y la BD la hace cumplir (ej: <code>unique</code>, <code>allowNull:false</code>).</li></ul>'},
+  {c:'orm', q:'¿Cuáles son los métodos CRUD principales de Sequelize?',
+   a:'<ul><li><span class="key">findAll()</span>: todos los registros (acepta <code>where</code>, <code>order</code>).</li><li><span class="key">findOne({where:{...}})</span>: el primero que cumple.</li><li><span class="key">create({...})</span>: inserta una fila.</li><li><span class="key">bulkCreate([...])</span>: inserta varias (carga masiva / seeders).</li><li><span class="key">count()</span>: cuenta filas.</li></ul>Filtros con operadores: <code>Op.like</code>, <code>Op.gt</code>, <code>Op.in</code>, <code>Op.and</code>, <code>Op.or</code>. Conexión SQLite: <code>new Sequelize({dialect:"sqlite", storage:"./db.sqlite"})</code>.'},
+  {c:'arq', q:'¿Qué es REST y cuáles son sus principios?',
+   a:'<span class="key">REST</span> (Roy Fielding, 2000): estilo arquitectónico web sobre HTTP. Principios:<ul><li><b>Cliente / Servidor</b>: responsabilidades separadas.</li><li><b>Sin estado</b>: cada petición es independiente.</li><li><b>Cache</b>: las respuestas se pueden cachear.</li><li><b>Arquitectura en capas</b>.</li><li><b>Interfaz uniforme</b>: cada recurso tiene una URI única.</li></ul>Buenas prácticas: sustantivos (no verbos), plurales, métodos y códigos HTTP adecuados, versionado (<code>/v1/products</code>), paginación (<code>limit</code>/<code>offset</code>), JSON.'},
+  {c:'arq', q:'¿Qué métodos HTTP existen y qué hace cada uno?',
+   a:'<ul><li><span class="key">GET</span>: obtener un recurso o colección.</li><li><span class="key">POST</span>: crear un recurso.</li><li><span class="key">PUT</span>: actualizar <b>todos</b> los atributos de un recurso.</li><li><span class="key">PATCH</span>: actualizar <b>algunos</b> atributos.</li><li><span class="key">DELETE</span>: borrar un recurso.</li></ul>Una API es la interfaz pública de un componente, expuesta vía HTTP, para intercambiar datos (normalmente en JSON).'},
+  {c:'arq', q:'Códigos de estado HTTP: ¿qué significan los más usados?',
+   a:'<ul><li><span class="key">200 OK</span>: operación exitosa.</li><li><span class="key">201 Created</span>: recurso creado (POST).</li><li><span class="key">400 Bad Request</span>: falla la validación de entrada del cliente.</li><li><span class="key">401 Unauthorized</span>: no autenticado (sin token / credenciales).</li><li><span class="key">403 Forbidden</span>: autenticado pero <b>sin permiso</b> (ej: requiere rol admin).</li><li><span class="key">404 Not Found</span>: el recurso no existe.</li><li><span class="key">500 Internal Server Error</span>: bug interno del servidor.</li></ul><b>401 vs 403:</b> 401 = no sé quién sos; 403 = sé quién sos pero no podés.'},
+  {c:'express', q:'¿Qué es Express y cuál es la sintaxis de una ruta?',
+   a:'<span class="key">Express</span> es un framework web <b>minimalista</b> para Node, "no dogmático" (vos decidís la arquitectura). Sintaxis de ruta:<pre>app.{METHOD}(PATH, HANDLER)\n\napp.get(\'/articulos\', (req, res) =&gt; {\n  res.send(\'lista!\');\n});</pre>El <b>handler</b> recibe <code>req</code> (solicitud) y <code>res</code> (respuesta) y se ejecuta cuando llega una petición a esa ruta. <code>app.use()</code> responde a <b>todos</b> los métodos.'},
+  {c:'express', q:'Objeto req: ¿qué son params, query y body?',
+   a:'Formas de recibir datos del cliente:<ul><li><span class="key">req.params</span>: parámetros de la ruta. <code>/articulos/:id</code> → <code>req.params.id</code></li><li><span class="key">req.query</span>: query string después de <code>?</code>. <code>/articulos?nombre=aire</code> → <code>req.query.nombre</code></li><li><span class="key">req.body</span>: cuerpo de la petición (POST/PUT).</li><li><span class="key">req.headers</span>: encabezados.</li></ul>'},
+  {c:'express', q:'Objeto res: ¿cómo se responde una petición?',
+   a:'<ul><li><span class="key">res.send(body)</span>: envía la respuesta (HTML, texto u objeto).</li><li><span class="key">res.json(body)</span>: envía respuesta JSON (con Content-Type correcto).</li><li><span class="key">res.status(code)</span>: fija el código de estado (encadenable): <code>res.status(201).json(obj)</code></li><li><span class="key">res.sendStatus(code)</span>: fija el código y envía su mensaje como cuerpo.</li><li><span class="key">res.redirect(ruta)</span>: redirecciona.</li></ul>Manejar errores: responder con estado y mensaje <b>sin exponer detalles internos</b>.'},
+  {c:'express', q:'¿Qué es express.Router y archivos estáticos?',
+   a:'<ul><li><span class="key">express.Router()</span>: crea manejadores de rutas <b>modulares y montables</b> (una mini-aplicación con su propio sistema de rutas/middleware). Se monta con <code>app.use(miRouter)</code> → todas sus rutas se añaden a la app.</li><li><span class="key">express.static(\'public\')</span>: sirve archivos estáticos (imágenes, CSS, JS) desde una carpeta, tal cual, sin procesarlos. <code>app.use(express.static(\'public\'))</code>.</li></ul><code>__dirname</code>: ruta del directorio del script actual (útil con el módulo <code>path</code> para armar rutas seguras).'},
+  {c:'express', q:'¿Qué es CORS, por qué aparece y cómo se habilita en Express?',
+   a:'<span class="key">CORS</span> = <b>Cross-Origin Resource Sharing</b>. Es una política <b>del navegador</b> que impide que un dominio acceda a recursos de <b>otro dominio</b> mediante peticiones AJAX (cuando usás <code>fetch()</code>, <code>XMLHttpRequest</code> o librerías como <b>Axios</b>).<br><br><b>Por qué aparece:</b> si el frontend (<code>dds-frontend.com</code>) y el backend (<code>dds-backend.com</code>) están en dominios distintos, por defecto <b>no pueden comunicarse</b> — el navegador bloquea la respuesta.<br><br><b>Cómo se resuelve</b> (en el backend, con el módulo cors):<pre>npm i cors\n\nconst cors = require(\'cors\');\napp.use(cors()); // permite todos los orígenes</pre>También se puede limitar a ciertos dominios con una <b>lista blanca</b> (whitelist).<br>🔑 Relacionado con la <b>Same Origin Policy</b> del Apunte 01: mismo origen = mismo dominio, protocolo y puerto.'}
+];
+</script>
+<script id="app-quiz">
+/* ====== SIMULACRO (estilo examen) ====== */
+const QUIZ = [
+  {type:'match', cat:'arq', stem:'Relacioná cada componente de una aplicación de seguimiento de entregas con la responsabilidad que mejor le corresponde.',
+   pairs:[
+     {l:'Frontend', r:'Presentar la información, capturar interacciones y enviar peticiones.'},
+     {l:'Base de datos', r:'Persistir y recuperar información de manera consistente.'},
+     {l:'Backend', r:'Aplicar reglas, coordinar operaciones y exponer endpoints.'},
+     {l:'HTTP', r:'Transportar solicitudes y respuestas entre cliente y servidor.'}
+   ],
+   fb:'Evalúa separación de responsabilidades, no nombres de herramientas. Cada capa conoce a las adyacentes y se comunica con ellas.'},
+  {type:'match', cat:'express', stem:'Relacioná cada pieza backend con su responsabilidad en una API de pedidos.',
+   pairs:[
+     {l:'Ruta Express', r:'Recibe la petición HTTP y deriva la ejecución.'},
+     {l:'Controlador', r:'Interpreta la solicitud y arma la respuesta.'},
+     {l:'Servicio', r:'Concentra reglas de negocio o casos de uso.'},
+     {l:'Modelo ORM / capa de datos', r:'Encapsula el acceso a la persistencia.'}
+   ],
+   fb:'La separación evita que una ruta concentre transporte HTTP, reglas y acceso directo a datos.'},
+  {type:'single', cat:'arq', stem:'Un equipo resuelve las validaciones de permisos solo ocultando botones en la pantalla. ¿Cuál es el problema principal?',
+   opts:['El sistema queda seguro porque el usuario ya no ve el botón.','El HTML deja de ser semántico si se ocultan botones con CSS.','Bootstrap no puede renderizar componentes que dependan de permisos.','Un usuario podría invocar igualmente el endpoint si el backend no valida la regla.'],
+   correct:3, fb:'Ocultar controles mejora la experiencia, pero la <b>autorización real</b> debe verificarse en el backend. La regla vive donde se hace cumplir.'},
+  {type:'single', cat:'js', stem:'Se tiene un array de precios y se quiere otro array con IVA incluido. ¿Qué método expresa mejor una transformación uno a uno?',
+   opts:['map, porque devuelve un nuevo array transformando cada elemento.','filter, porque agrega propiedades a cada elemento.','addEventListener, porque transforma datos cuando hay eventos.','forEach, porque siempre devuelve el array transformado.'],
+   correct:0, fb:'<b>map</b> transforma cada elemento y devuelve un array nuevo. filter selecciona; forEach no devuelve nada.'},
+  {type:'single', cat:'dom', stem:'Tras recibir datos del backend se quiere cambiar solo el texto de <code>&lt;h1 id="titulo"&gt;Pendiente&lt;/h1&gt;</code>. ¿Qué instrucción es más adecuada?',
+   opts:['document.getElementById("titulo").textContent = "Datos actualizados";','app.get("#titulo", "Datos actualizados");','document.getElementById("titulo").style = "Datos actualizados";','document.querySelector("#titulo").fetch("Datos actualizados");'],
+   correct:0, fb:'<code>textContent</code> modifica el contenido textual del nodo sin confundir estilo, red ni backend.'},
+  {type:'multi', cat:'js', stem:'Seleccioná todas las afirmaciones correctas sobre JavaScript en el navegador.', help:'Esta pregunta tiene 3 respuestas correctas.',
+   opts:['fetch actualiza automáticamente el DOM aunque no se procese la respuesta.','textContent sirve para cambiar el texto de un nodo sin interpretarlo como HTML.','Un listener registrado con addEventListener puede ejecutar código cuando ocurre un evento.','await debe usarse dentro de una función async o un contexto que lo permita.'],
+   correct:[1,2,3], fb:'fetch no toca el DOM por sí solo: hay que procesar la respuesta y actualizar el DOM manualmente.'},
+  {type:'multi', cat:'html', stem:'En un panel de turnos, seleccioná las decisiones que mejoran estructura, accesibilidad y mantenimiento del frontend.', help:'Esta pregunta tiene 2 respuestas correctas.',
+   opts:['Reemplazar toda la estructura semántica por divs para simplificar el HTML.','Usar labels asociados a los inputs importantes del formulario.','Usar CSS propio para centralizar ajustes visuales repetidos.','Depender del placeholder como único nombre visible y accesible del campo.'],
+   correct:[1,2], fb:'Labels + CSS reutilizable mejoran accesibilidad y mantenimiento. Divs genéricos y placeholders como única guía empobrecen la interfaz.'},
+  {type:'single', cat:'css', stem:'Una grilla se ve bien en escritorio pero rompe el contenido en celular. ¿Cuál es el análisis más adecuado?',
+   opts:['El problema es solo de base de datos porque hay demasiados registros.','Hay que revisar estructura responsive, clases de grilla y prioridades de contenido para pantallas chicas.','Conviene fijar el ancho en 1400px para que todos vean la misma versión.','La solución correcta es convertir todo el texto en imágenes.'],
+   correct:1, fb:'El diseño responsive exige adaptar layout y jerarquía visual según el espacio disponible (grid de Bootstrap, breakpoints).'},
+  {type:'multi', cat:'arq', stem:'En una API para gestionar productos, seleccioná las decisiones técnicamente adecuadas.', help:'Esta pregunta tiene 2 respuestas correctas.',
+   opts:['Exponer detalles internos del error SQL al usuario final para facilitar la depuración.','Responder siempre 200 aunque la base de datos falle, para simplificar el frontend.','Encapsular el acceso a datos en modelos ORM o una capa de datos simple.','Usar POST para crear un nuevo recurso cuando el endpoint recibe los datos de alta.'],
+   correct:[2,3], fb:'Respetar la semántica HTTP y separar responsabilidades sin exponer detalles internos. Mentir con 200 ante un fallo rompe el contrato de la API.'},
+  {type:'single', cat:'express', stem:'En una ruta Express, una operación asincrónica con la base de datos puede fallar. ¿Qué decisión es más robusta?',
+   opts:['Manejar el error y responder con un estado y mensaje adecuados sin exponer detalles internos.','Ignorar el error para que el frontend no se entere.','Convertir la ruta en CSS para que no pueda fallar.','Enviar siempre 201 aunque no se haya guardado nada.'],
+   correct:0, fb:'La API debe manejar fallas de forma explícita y responder de manera consistente (try/catch + res.status).'},
+  {type:'single', cat:'arq', stem:'El cliente envía un POST con un email mal formado. ¿Qué status code corresponde?',
+   opts:['200 OK','400 Bad Request','404 Not Found','500 Internal Server Error'],
+   correct:1, fb:'<b>400</b>: falla la validación de la entrada enviada por el cliente.'},
+  {type:'single', cat:'arq', stem:'El cliente envía un token válido, pero el endpoint requiere rol admin y el usuario es regular. ¿Qué status code corresponde?',
+   opts:['401 Unauthorized','403 Forbidden','200 OK','404 Not Found'],
+   correct:1, fb:'<b>403 Forbidden</b>: está autenticado pero no tiene permiso. (401 sería sin token / sin autenticar.)'},
+  {type:'single', cat:'arq', stem:'Se creó exitosamente un nuevo recurso vía POST. ¿Qué status code es el más apropiado?',
+   opts:['200 OK','201 Created','202 Accepted','204 No Content'],
+   correct:1, fb:'<b>201 Created</b> indica que un nuevo recurso fue creado correctamente.'},
+  {type:'single', cat:'js', stem:'¿Cuál es el resultado de <code>console.log("3" + 9)</code> en JavaScript?',
+   opts:['12','"39"','NaN','Error de tipos'],
+   correct:1, fb:'Coerción implícita: el operador + concatena, convirtiendo 9 a string → "39". Para sumar: <code>Number("3") + 9</code> = 12.'},
+  {type:'single', cat:'js', stem:'¿Qué imprime este código? <code>console.log("A"); setTimeout(()=>console.log("B"),0); console.log("C");</code>',
+   opts:['A B C','A C B','B A C','C B A'],
+   correct:1, fb:'Aunque el timeout sea 0, el callback va a la cola de eventos y se ejecuta cuando el hilo principal termina: <b>A, C, B</b>.'},
+  {type:'single', cat:'js', stem:'¿Cuál de estas comparaciones devuelve <code>false</code>?',
+   opts:["'3' == 3","false == 0","'3' === 3","null == undefined"],
+   correct:2, fb:'<code>===</code> es estricto (valor + tipo): un string nunca es igual a un número. Las demás usan coerción y dan true.'},
+  {type:'single', cat:'async', stem:'Una función usa <code>await fetch("/api/items")</code>. ¿Qué condición debe cumplirse?',
+   opts:['Debe estar dentro de una función declarada con async.','fetch no necesita await porque es síncrono.','await solo funciona dentro de un for.','Debe importarse await desde un módulo.'],
+   correct:0, fb:'<code>await</code> solo se usa dentro de una función <code>async</code> (o contexto que lo permita); pausa hasta que la promesa se resuelve.'},
+  {type:'single', cat:'orm', stem:'Un endpoint arma una consulta SQL textual dentro de la ruta y repite esa lógica en varios lugares. ¿Cuál es la mejor mejora?',
+   opts:['Encapsular el acceso a datos en un modelo ORM o capa de datos reutilizable.','Copiar la consulta en cada ruta para que sean independientes.','Mover el SQL al frontend.','Responder siempre 500 para evitar el problema.'],
+   correct:0, fb:'El ORM / capa de datos centraliza y reutiliza el acceso a persistencia, evitando duplicar SQL y mezclar responsabilidades.'},
+  {type:'single', cat:'orm', stem:'En Sequelize, un campo tiene <code>validate: { isEmail: true }</code> y se intenta crear con un email inválido. ¿Qué ocurre?',
+   opts:['El dato no se envía a la base de datos y se lanza una excepción de validación.','Se guarda igual porque las validaciones son opcionales.','La base de datos corrige el email automáticamente.','Se convierte en NULL antes de guardar.'],
+   correct:0, fb:'Las <b>validaciones</b> son a nivel ORM (JS): si fallan, el dato no llega a la BD. Las <b>restricciones</b> las hace cumplir la BD.'},
+  {type:'single', cat:'express', stem:'¿Qué hace <code>app.use(articulosRouter)</code> en Express?',
+   opts:['Crea un nuevo enrutador de artículos.','Importa el módulo de artículos.','Añade todas las rutas definidas en el enrutador a la aplicación Express.','Elimina las rutas de artículos.'],
+   correct:2, fb:'Monta el Router: todas sus rutas se añaden a la app. <code>express.Router()</code> crea manejadores modulares (mini-app).'},
+  {type:'single', cat:'express', stem:'Para la URL <code>http://localhost:3000/articulos/15</code> con la ruta <code>app.get(\'/articulos/:id\', ...)</code>, ¿cómo se obtiene el 15?',
+   opts:['req.query.id','req.params.id','req.body.id','req.headers.id'],
+   correct:1, fb:'Los parámetros de la <b>ruta</b> (<code>:id</code>) se leen en <code>req.params</code>. El query string (<code>?x=</code>) iría en <code>req.query</code>.'},
+  {type:'single', cat:'node', stem:'¿Qué es <code>__dirname</code> en Node.js?',
+   opts:['La ruta del directorio de trabajo actual.','La ruta del directorio del archivo de script que se está ejecutando.','La ruta de la base de datos.','El nombre del proyecto en package.json.'],
+   correct:1, fb:'<code>__dirname</code> contiene la ruta del directorio del script actual; útil con el módulo <code>path</code> para servir estáticos.'},
+  {type:'single', cat:'dom', stem:'En una SPA, ¿cómo se detectan los cambios de vista a través de la URL sin recargar la página?',
+   opts:['Con el evento hashchange sobre el objeto window y el hash de la URL.','Recargando el servidor en cada clic.','Con una consulta SQL por cada vista.','Cambiando el archivo HTML en disco.'],
+   correct:0, fb:'La SPA usa el <b>hash</b> (<code>#</code>) de la URL y escucha <code>window.addEventListener("hashchange", ...)</code> para intercambiar vistas.'},
+  {type:'single', cat:'node', stem:'¿Cuál de estas afirmaciones sobre Node.js es correcta?',
+   opts:['Node.js es un lenguaje de programación.','Node.js es un framework de servidor como alternativa a Express.','Node.js es un entorno de ejecución de JavaScript basado en el motor V8.','Node.js solo funciona dentro del navegador.'],
+   correct:2, fb:'Node.js es un <b>entorno de ejecución</b> de JS sobre V8. El lenguaje es JavaScript; Express es el framework.'},
+  {type:'single', cat:'git', stem:'Modificaste un archivo y querés que forme parte del próximo commit. ¿Qué hacés primero?',
+   opts:['git push','git add archivo (pasarlo a staging)','git clone','git restore archivo'],
+   correct:1, fb:'Flujo: modificado → <code>git add</code> (staging) → <code>git commit</code> → <code>git push</code> al remoto.'},
+  {type:'single', cat:'fund', stem:'Una app web necesita que el usuario suba una foto desde su PC. Si JS no puede leer archivos arbitrarios del disco, ¿cómo es posible?',
+   opts:['JS tiene acceso total al disco siempre.','La restricción se relaja cuando el usuario selecciona el archivo con <input type="file"> o lo arrastra.','El backend lee el disco del cliente por SSH.','Es imposible subir archivos desde el navegador.'],
+   correct:1, fb:'Por la política de seguridad, el acceso solo se habilita ante una <b>acción explícita del usuario</b> (input file o drag&drop). Sin eso, una página maliciosa podría robar archivos.'},
+  {type:'single', cat:'css', stem:'¿Cuál selector CSS apunta al elemento con <code>id="encabezado"</code>?',
+   opts:['.encabezado','#encabezado','encabezado','*encabezado'],
+   correct:1, fb:'<code>#</code> selecciona por id, <code>.</code> por clase, el nombre solo selecciona por etiqueta.'},
+  {type:'single', cat:'async', stem:'¿Qué devuelve el método <code>forEach</code> de un array?',
+   opts:['Un nuevo array transformado.','Undefined (no devuelve nada útil).','Un booleano.','El array original modificado.'],
+   correct:1, fb:'<code>forEach</code> solo itera y ejecuta; no devuelve un array. Para transformar usá <code>map</code>; para seleccionar, <code>filter</code>.'},
+  {type:'single', cat:'arq', stem:'Siguiendo buenas prácticas REST, ¿cuál es la mejor URL para obtener todos los productos?',
+   opts:['/getAllProducts','/products','/product/getAll','/obtenerProductos'],
+   correct:1, fb:'REST usa <b>sustantivos en plural</b> y el método HTTP describe la acción (GET /products). Nada de verbos en la URL.'},
+  {type:'single', cat:'express', stem:'El frontend en <code>dds-frontend.com</code> hace <code>fetch()</code> al backend en <code>dds-backend.com</code> y el navegador bloquea la respuesta. ¿Cuál es la causa y la solución correcta?',
+   opts:['Es un error de la base de datos; hay que reiniciar SQLite.','Es la política CORS del navegador; se habilita en el backend con el módulo cors (app.use(cors())).','Hay que cambiar fetch por innerHTML.','Se soluciona ocultando el botón que dispara la petición.'],
+   correct:1, fb:'<b>CORS</b> (Cross-Origin Resource Sharing) es una política del navegador que bloquea peticiones entre dominios distintos. Se resuelve en el <b>backend</b> instalando y configurando <code>cors</code>: <code>app.use(cors())</code> (o una lista blanca de dominios permitidos).'},
+  {type:'multi', cat:'express', stem:'Seleccioná las afirmaciones correctas sobre CORS.', help:'Esta pregunta tiene 2 respuestas correctas.',
+   opts:['CORS es una política aplicada por el navegador que afecta peticiones AJAX (fetch, XMLHttpRequest, Axios) entre orígenes distintos.','CORS es una librería de base de datos para crear tablas.','Por defecto, dos dominios distintos no pueden compartir recursos; se habilita desde el servidor con app.use(cors()).','CORS se configura en el archivo .gitignore.'],
+   correct:[0,2], fb:'CORS regula el acceso entre <b>orígenes</b> (dominio + protocolo + puerto). Se habilita en el backend con el módulo <code>cors</code>; se puede abrir a todos o limitar con whitelist. Se relaciona con la Same Origin Policy.'}
+];
+</script>
+<script id="app-logic">
+/* ====== HELPERS ====== */
+const $=(s,e=document)=>e.querySelector(s);
+const $$=(s,e=document)=>[...e.querySelectorAll(s)];
+const ccVar=c=>CATS[c]?CATS[c].v:'--saffron';
+function shuffle(a){a=a.slice();for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]]}return a}
+
+/* ====== TABS ====== */
+$$('.tab').forEach(t=>t.addEventListener('click',()=>{
+  $$('.tab').forEach(x=>x.setAttribute('aria-selected','false'));
+  t.setAttribute('aria-selected','true');
+  $$('.panel').forEach(p=>p.classList.remove('active'));
+  $('#'+t.dataset.panel).classList.add('active');
+  window.scrollTo({top:0,behavior:'smooth'});
+}));
+
+/* ====== PLAN ====== */
+function renderPlan(){
+  const counts={};FICHAS.forEach(f=>counts[f.c]=(counts[f.c]||0)+1);
+  let h=`<div class="card-base diag">
+    <h3>Diagnóstico rápido (regla 80/20)</h3>
+    <p class="lead" style="margin-bottom:4px">El examen es situacional: opción múltiple, <b>relacionar</b>, multi-respuesta y 2 preguntas de desarrollo. No premia recitar de memoria, sino <b>identificar dónde vive cada regla y justificar</b>. Esto es lo que más rinde:</p>
+    <div class="pills">
+      <span class="dp hot">Arquitectura en capas (relacionar)</span>
+      <span class="dp hot">Códigos HTTP + métodos REST</span>
+      <span class="dp hot">map / filter / forEach + DOM</span>
+      <span class="dp hot">async / await · fetch · promesas</span>
+      <span class="dp">Seguridad: validar en el backend</span>
+      <span class="dp">ORM: responsabilidades</span>
+      <span class="dp">HTML semántico · accesibilidad</span>
+      <span class="dp warn">⚠ 401 vs 403 (suele confundir)</span>
+      <span class="dp warn">⚠ == vs === (coerción)</span>
+    </div></div>`;
+  PLAN.forEach(d=>{
+    h+=`<div class="dayrow">
+      <div class="daynum" style="--cc:var(${d.cc})"><b>${d.n}</b><span>día</span></div>
+      <div class="card-base daycard" style="--cc:var(${d.cc})">
+        <h3>${d.t}<span class="tag">${d.tag}</span></h3>
+        <ul>${d.items.map(i=>`<li>${i}</li>`).join('')}</ul>
+        <div class="recall">🧠 Recuerdo activo: ${d.recall}</div>
+      </div></div>`;
+  });
+  h+=`<div class="tip"><b>Cómo usar este sistema:</b> cada día, estudiá el apunte → pasá a <b>Fichas</b> y tapá la respuesta (predecí antes de dar vuelta) → al final del día hacé las preguntas de <b>Simulacro</b> de esos temas. El día 6, simulacro completo cronometrado. Marcá tus fichas débiles en <b>Repaso</b>.</div>`;
+  $('#plan').innerHTML=h;
+}
+
+/* ====== FICHAS ====== */
+let fIndex=0, fFilter='all', fList=FICHAS.slice();
+function renderFichasShell(){
+  const counts={};FICHAS.forEach(f=>counts[f.c]=(counts[f.c]||0)+1);
+  let pills=`<button class="pill" data-cat="all" aria-pressed="true"><span class="dot" style="--cc:var(--muted)"></span>Todas <span class="n">${FICHAS.length}</span></button>`;
+  Object.keys(CATS).forEach(k=>{ if(counts[k]) pills+=`<button class="pill" data-cat="${k}" aria-pressed="false" style="--cc:var(${CATS[k].v})"><span class="dot"></span>${CATS[k].label} <span class="n">${counts[k]}</span></button>`; });
+  $('#fichas').innerHTML=`
+    <h2 class="sec">Fichas de estudio</h2>
+    <p class="lead">Recuerdo activo: leé la pregunta, <b>respondé en voz alta o por escrito</b>, y recién ahí tocá la ficha para ver la respuesta. ${FICHAS.length} fichas sobre los 14 apuntes.</p>
+    <div class="cats">${pills}</div>
+    <div class="fichabar">
+      <button class="navbtn" id="fprev">‹ Anterior</button>
+      <button class="navbtn" id="fnext">Siguiente ›</button>
+      <button class="navbtn" id="fshuf">⤮ Mezclar</button>
+      <span class="counter" id="fcount"></span>
+    </div>
+    <div class="scene"><div class="flip" id="flip">
+      <div class="face front" id="fface-front"></div>
+      <div class="face back" id="fface-back"></div>
+    </div></div>`;
+  $$('#fichas .pill').forEach(p=>p.addEventListener('click',()=>{
+    $$('#fichas .pill').forEach(x=>x.setAttribute('aria-pressed','false'));
+    p.setAttribute('aria-pressed','true');
+    fFilter=p.dataset.cat;
+    fList = fFilter==='all'?FICHAS.slice():FICHAS.filter(f=>f.c===fFilter);
+    fIndex=0; showFicha();
+  }));
+  $('#flip').addEventListener('click',()=>$('#flip').classList.toggle('flipped'));
+  $('#fprev').addEventListener('click',()=>{fIndex=(fIndex-1+fList.length)%fList.length;showFicha()});
+  $('#fnext').addEventListener('click',()=>{fIndex=(fIndex+1)%fList.length;showFicha()});
+  $('#fshuf').addEventListener('click',()=>{fList=shuffle(fList);fIndex=0;showFicha()});
+  showFicha();
+}
+function showFicha(){
+  const f=fList[fIndex]; if(!f)return;
+  const cv=ccVar(f.c), lbl=CATS[f.c].label;
+  $('#flip').classList.remove('flipped');
+  $('#fface-front').style.setProperty('--cc',`var(${cv})`);
+  $('#fface-back').style.setProperty('--cc',`var(${cv})`);
+  $('#fface-front').innerHTML=`<div class="meta"><span class="ftab"><span class="dot"></span>${lbl}</span><span class="num">${fIndex+1} / ${fList.length}</span></div>
+    <div class="qtext">${f.q}</div>
+    <div class="hintrow">👆 Tocá para ver la respuesta</div>`;
+  $('#fface-back').innerHTML=`<div class="meta"><span class="ftab"><span class="dot"></span>${lbl}</span><span class="num">Respuesta</span></div>
+    <div class="atext">${f.a}</div>`;
+  $('#fcount').textContent=`Ficha ${fIndex+1} de ${fList.length}`;
+}
+
+/* ====== SIMULACRO ====== */
+let qData=[], qSubmitted=false;
+function renderQuizShell(){
+  $('#quiz').innerHTML=`
+    <h2 class="sec">Simulacro de examen</h2>
+    <p class="lead">Preguntas al estilo del parcial (situacionales, relacionar y multi-respuesta). Respondé todo y al final corregís con justificación docente.</p>
+    <div class="card-base qsetup">
+      <h3>Elegí el modo</h3>
+      <p class="lead" style="margin:0">El modo completo mezcla las ${QUIZ.length} preguntas. El modo express toma 10 al azar para un repaso rápido.</p>
+      <div class="modebtns">
+        <button class="btn primary" data-mode="full">Simulacro completo (${QUIZ.length})</button>
+        <button class="btn ghost" data-mode="express">Express (10 al azar)</button>
+      </div>
+    </div>
+    <div id="qbody"></div>`;
+  $$('#quiz [data-mode]').forEach(b=>b.addEventListener('click',()=>startQuiz(b.dataset.mode)));
+}
+function startQuiz(mode){
+  qSubmitted=false;
+  qData = mode==='express'? shuffle(QUIZ).slice(0,10) : shuffle(QUIZ);
+  qData = qData.map(q=>{
+    const o={...q, _resp: q.type==='multi'?[]:(q.type==='match'?{}:null)};
+    if(q.type==='match') o._opts=shuffle(q.pairs.map(p=>p.r));
+    return o;
+  });
+  let h='';
+  qData.forEach((q,qi)=>{ h+=renderQuestion(q,qi); });
+  h+=`<div class="btnrow"><button class="btn primary" id="qsubmit">Corregir simulacro</button><button class="btn ghost" id="qrestart">Reiniciar</button></div>
+      <div id="qresult"></div>`;
+  $('#qbody').innerHTML=h;
+  bindQuestions();
+  $('#qsubmit').addEventListener('click',gradeQuiz);
+  $('#qrestart').addEventListener('click',renderQuizShell);
+  window.scrollTo({top:120,behavior:'smooth'});
+}
+function renderQuestion(q,qi){
+  const cv=ccVar(q.cat), lbl=CATS[q.cat].label;
+  let body='';
+  if(q.type==='single'||q.type==='multi'){
+    body=q.opts.map((o,oi)=>`<div class="opt" data-qi="${qi}" data-oi="${oi}"><div class="box"></div><div class="otxt">${o}</div></div>`).join('');
+  } else if(q.type==='match'){
+    body=`<div class="match">`+q.pairs.map((p,pi)=>`
+      <div class="matchrow">
+        <div class="matchlabel">${p.l}</div>
+        <select data-qi="${qi}" data-pi="${pi}"><option value="">— elegí —</option>${q._opts.map(r=>`<option value="${encodeURIComponent(r)}">${r}</option>`).join('')}</select>
+      </div>`).join('')+`</div>`;
+  }
+  return `<div class="card-base qq" id="qq${qi}" style="--cc:var(${cv})">
+    <div class="qhead"><span class="qn">Pregunta ${qi+1}</span><span class="qcat">${lbl}</span></div>
+    <div class="qstem">${q.stem}</div>
+    ${q.help?`<div class="qhelp">💡 ${q.help}</div>`:''}
+    ${body}
+    <div class="feedback" id="fb${qi}"></div>
+  </div>`;
+}
+function bindQuestions(){
+  $$('#qbody .opt').forEach(op=>op.addEventListener('click',()=>{
+    if(qSubmitted)return;
+    const qi=+op.dataset.qi, oi=+op.dataset.oi, q=qData[qi];
+    if(q.type==='single'){
+      $$(`.opt[data-qi="${qi}"]`).forEach(x=>x.classList.remove('sel'));
+      op.classList.add('sel'); q._resp=oi;
+    } else {
+      op.classList.toggle('sel');
+      q._resp = $$(`.opt[data-qi="${qi}"].sel`).map(x=>+x.dataset.oi);
+    }
+  }));
+  $$('#qbody select').forEach(se=>se.addEventListener('change',()=>{
+    if(qSubmitted)return;
+    const qi=+se.dataset.qi, pi=+se.dataset.pi;
+    qData[qi]._resp[pi]=decodeURIComponent(se.value);
+  }));
+}
+function gradeQuiz(){
+  if(qSubmitted)return; qSubmitted=true;
+  let score=0;
+  qData.forEach((q,qi)=>{
+    const fb=$('#fb'+qi); let ok=false;
+    if(q.type==='single'){
+      ok = q._resp===q.correct;
+      $$(`.opt[data-qi="${qi}"]`).forEach(op=>{
+        const oi=+op.dataset.oi;
+        if(oi===q.correct) op.classList.add('correct');
+        else if(oi===q._resp) op.classList.add('wrong');
+      });
+    } else if(q.type==='multi'){
+      const sel=(q._resp||[]).slice().sort().join(',');
+      const cor=q.correct.slice().sort().join(',');
+      ok = sel===cor;
+      $$(`.opt[data-qi="${qi}"]`).forEach(op=>{
+        const oi=+op.dataset.oi;
+        if(q.correct.includes(oi)) op.classList.add('correct');
+        else if((q._resp||[]).includes(oi)) op.classList.add('wrong');
+      });
+    } else if(q.type==='match'){
+      ok=true;
+      $$(`select[data-qi="${qi}"]`).forEach(se=>{
+        const pi=+se.dataset.pi, want=q.pairs[pi].r, got=q._resp[pi]||'';
+        if(got===want) se.classList.add('correct');
+        else {se.classList.add('wrong'); ok=false;}
+      });
+    }
+    if(ok)score++;
+    fb.classList.add('show', ok?'ok':'no');
+    fb.innerHTML=`<b>${ok?'✓ Correcta':'✗ Revisar'}.</b> ${q.fb}`;
+  });
+  const total=qData.length, pct=Math.round(score/total*100);
+  let msg, nota=(score/total*10);
+  if(pct>=80) msg='Muy bien. Estás en zona de aprobado holgado — pulí los detalles.';
+  else if(pct>=60) msg='Vas bien, pero hay temas para reforzar. Repasá las fichas de lo que fallaste.';
+  else msg='Todavía falta. Volvé a las fichas de los temas marcados en rojo y reintentá.';
+  const rc=document.createElement('div');
+  rc.innerHTML=`<div class="card-base scorecard">
+    <div class="big">${score}/${total}</div>
+    <div class="pct">${pct}% · nota aproximada ${nota.toFixed(1)}/10</div>
+    <div class="msg">${msg}</div></div>`;
+  $('#qresult').innerHTML=''; $('#qresult').appendChild(rc.firstChild);
+  $('#qsubmit').disabled=true;
+  $('#qresult').scrollIntoView({behavior:'smooth'});
+}
+
+/* ====== REPASO (repetición espaciada) ====== */
+const REPASO_ROWS=[
+  {a:'01–02',t:'Capas, JS en navegador, Git'},
+  {a:'03',t:'HTML: semántica y formularios'},
+  {a:'04–05',t:'CSS, modelo de cajas, Bootstrap'},
+  {a:'06',t:'JS I: tipos, ===, funciones, hoisting'},
+  {a:'07',t:'JS II: objetos, arrays, destructuring, JSON'},
+  {a:'08',t:'DOM, eventos, SPA, hash'},
+  {a:'09',t:'Node, NPM, package.json'},
+  {a:'10',t:'Callbacks, promesas, async/await, fetch'},
+  {a:'11',t:'ORM Sequelize: modelos, validaciones, CRUD'},
+  {a:'12',t:'Arquitectura, REST, HTTP status + métodos'},
+  {a:'13–14',t:'Express: req/res, Router, static, CORS'}
+];
+function renderRepaso(){
+  let rows=REPASO_ROWS.map((r,i)=>`<tr>
+    <td style="font-family:var(--mono);color:var(--saffron)">${r.a}</td>
+    <td>${r.t}</td>
+    <td style="text-align:center"><span class="chk" data-k="d1_${i}">⬜</span></td>
+    <td style="text-align:center"><span class="chk" data-k="d3_${i}">⬜</span></td>
+    <td style="text-align:center"><span class="chk" data-k="d6_${i}">⬜</span></td>
+    <td><span class="chk" data-k="weak_${i}">☆</span></td>
+  </tr>`).join('');
+  $('#repaso').innerHTML=`
+    <h2 class="sec">Tabla de repetición espaciada</h2>
+    <p class="lead">La clave para retener con poco tiempo: repasá cada tema en <b>3 momentos separados</b> (1ª vez, +2 días, antes del examen). Marcá ✓ cuando lo repasaste y ★ los temas que todavía te cuestan.</p>
+    <div class="card-base" style="padding:14px 16px;overflow-x:auto">
+    <table class="rep">
+      <thead><tr><th>Apunte</th><th>Tema</th><th>1ª vuelta</th><th>+2 días</th><th>Pre-examen</th><th>Débil</th></tr></thead>
+      <tbody>${rows}</tbody>
+    </table>
+    <div class="legend">Tocá las celdas para marcar. Se guarda en este dispositivo. ⬜→✓ repasado · ☆→★ tema débil (priorizalo).</div>
+    </div>
+    <div class="tip"><b>Estrategia anti-olvido:</b> dedicá los primeros 15 min de cada día a recordar (sin mirar) lo del día anterior. El esfuerzo de recuperar de memoria es lo que fija el conocimiento — no el releer.</div>`;
+  // load saved
+  let saved={}; try{saved=JSON.parse(localStorage.getItem('dds_repaso')||'{}')}catch(e){}
+  $$('#repaso .chk').forEach(c=>{
+    const k=c.dataset.k;
+    if(saved[k]) c.textContent = k.startsWith('weak')?'★':'✓';
+    if(saved[k]) c.style.color = k.startsWith('weak')?'var(--coral)':'var(--ok)';
+    c.style.cursor='pointer';
+    c.addEventListener('click',()=>{
+      const on=!saved[k]; saved[k]=on;
+      if(k.startsWith('weak')){c.textContent=on?'★':'☆';c.style.color=on?'var(--coral)':'';}
+      else {c.textContent=on?'✓':'⬜';c.style.color=on?'var(--ok)':'';}
+      try{localStorage.setItem('dds_repaso',JSON.stringify(saved))}catch(e){}
+    });
+  });
+}
+
+/* ====== INIT ====== */
+renderPlan(); renderFichasShell(); renderQuizShell(); renderRepaso();
+</script>
+</body>
+</html>
