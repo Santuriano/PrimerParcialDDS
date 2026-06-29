@@ -29,8 +29,8 @@ La app se organiza en **4 pestañas** navegables desde la barra superior (*stick
 | Pestaña | Contenido |
 |---------|-----------|
 | 🗓️ **Plan** | Plan de estudio de **6 días** (3 h/día) con un diagnóstico 80/20 que marca los temas de mayor peso y, para cada día, objetivos + una consigna de **recuerdo activo**. |
-| 🃏 **Fichas** | **37 tarjetas** de recuerdo activo con efecto de *giro*, filtro por categoría, mezcla aleatoria y navegación anterior/siguiente. Pensás la respuesta **antes** de dar vuelta la ficha. |
-| ✅ **Simulacro** | **31 preguntas** estilo parcial: opción simple, **multi-respuesta** y **relacionar** (*matching*). Modo completo o express (10 al azar), con autocorrección, justificación docente y nota aproximada /10. |
+| 🃏 **Fichas** | **41 tarjetas** de recuerdo activo con efecto de *giro*, filtro por categoría, mezcla aleatoria y navegación anterior/siguiente. Pensás la respuesta **antes** de dar vuelta la ficha. |
+| ✅ **Simulacro** | **36 preguntas** estilo parcial: opción simple, **multi-respuesta** y **relacionar** (*matching*). Modo completo o express (10 al azar), con autocorrección, justificación docente y nota aproximada /10. |
 | 🔁 **Repaso** | Tabla de **repetición espaciada**: marcás cada tema en 3 momentos (1ª vuelta · +2 días · pre-examen) y señalás los temas **débiles**. Se guarda en el dispositivo. |
 
 ---
